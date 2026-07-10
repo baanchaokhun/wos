@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WOS · สร้างอนาคตการดูแลสุขภาพและการต้อนรับ — ไทย ↔ ลาว</title>
+  <meta name="description" content="WOS — Cross-Border Healthcare & Hospitality Platform connecting hotels in Thailand with hospitals and wellness partners for patients travelling from Laos." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2313213B'/%3E%3Ctext x='16' y='22' font-family='serif' font-size='16' fill='%239B7B3A' text-anchor='middle'%3EW%3C/text%3E%3C/svg%3E" />
+
+  <!-- Fonts & Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* === Olive Green Capital inspired palette + WOS elegance === */
+    :root {
+      --paper: #F7F5EF;
+      --paper-card: #FFFFFF;
+      --ink: #13213B;
+      --ink-soft: #2E3B4A;      /* ปรับเข้มขึ้นเพื่อ Contrast */
+      --line: #D8D2C2;
+      --gold: #9B7B3A;
+      --gold-soft: #B89B5E;
+      --navy-deep: #0B1A2A;
+      --muted-red: #9C5A50;
+      --olive-green: #5C6B3C;
+      --olive-light: #9FB08C;
+    }
+    * { box-sizing: border-box; margin: 0; }
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 80px;  /* แก้ไขจุดที่ 2: ชดเชยความสูง Topbar */
+    }
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: 'Inter', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    .serif { font-family: 'Source Serif 4', serif; }
+    .eyebrow { font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-soft); font-weight: 600; }
+
+    /* Top bar */
+    .topbar {
+      position: fixed; top:0; left:0; width:100%; z-index:999;
+      background: rgba(247,245,239,.88);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+      height: 64px;
+    }
+    .topbar-inner {
+      max-width:1120px; margin:0 auto; padding:12px 28px;
+      display:flex; align-items:center; justify-content:space-between;
+      height: 100%;
+    }
+    .topbar .wordmark {
+      font-family:'Source Serif 4',serif; font-size:15px; letter-spacing:.04em; color:var(--ink);
+    }
+    .topbar .wordmark span { color: var(--gold); }
+    .topbar a.book-call {
+      font-size:12px; letter-spacing:.05em; color:var(--ink);
+      border:1px solid var(--ink); padding:6px 16px; border-radius:2px;
+      transition:.2s; white-space:nowrap;
+    }
+    .topbar a.book-call:hover { background:var(--ink); color:var(--paper); }
+
+    .top-nav { display:flex; align-items:center; gap:26px; }
+    .top-nav a {
+      font-size:13px; color:var(--ink-soft); letter-spacing:.01em;
+      transition:.2s; white-space:nowrap;
+    }
+    .top-nav a:hover { color:var(--gold); }
+    @media (max-width:900px) { .top-nav { display:none; } }
+
+    .progress-rail {
+      position:fixed; top:0; left:0; height:2px; background:var(--gold);
+      z-index:1000; width:0%; transition:width .1s linear;
+    }
+
+    .page { border-top:1px solid var(--line); position:relative; }
+    .page-inner { max-width:880px; margin:0 auto; padding:120px 28px; }
+    .page-inner.wide { max-width:1100px; }
+    .page-meta {
+      display:flex; justify-content:space-between; align-items:baseline;
+      margin-bottom:56px;
+    }
+    .page-meta .tag { font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--gold); font-weight:600; }
+    .page-meta .count { font-size:11px; letter-spacing:.1em; color:var(--ink-soft); font-variant-numeric:tabular-nums; }
+
+    h2.page-title {
+      font-family:'Source Serif 4',serif; font-weight:500;
+      font-size:clamp(28px,4vw,44px); color:var(--ink); line-height:1.2;
+    }
+    p.page-lede { color:var(--ink-soft); font-size:16px; margin-top:14px; max-width:640px; line-height:1.7; }
+
+    .hairline { height:1px; background:var(--line); }
+    .card {
+      background:var(--paper-card); border:1px solid var(--line);
+      border-radius:4px; padding:28px; transition:.25s ease;
+    }
+    .card:hover { border-color:var(--gold); transform:translateY(-2px); }
+
+    .btn-primary {
+      background: var(--olive-green); color:white; padding:14px 32px;
+      border-radius:2px; font-size:14px; letter-spacing:.03em; font-weight:500;
+      transition:.2s; display:inline-flex; align-items:center; gap:8px;
+    }
+    .btn-primary:hover { background: var(--gold); color:white; }
+    .btn-outline-light {
+      border:1px solid rgba(255,255,255,.45); color:#E8E6E0;
+      padding:14px 32px; border-radius:2px; font-size:14px; letter-spacing:.03em;
+      transition:.2s; display:inline-flex; align-items:center; gap:8px;
+    }
+    .btn-outline-light:hover { border-color:#fff; background:rgba(255,255,255,.08); color:#fff; }
+    .btn-outline-dark {
+      border:1px solid var(--ink); color:var(--ink);
+      padding:14px 32px; border-radius:2px; font-size:14px; letter-spacing:.03em;
+      transition:.2s; display:inline-flex; align-items:center; gap:8px;
+    }
+    .btn-outline-dark:hover { background:var(--ink); color:var(--paper); }
+
+    .reveal { opacity:0; transform:translateY(16px); transition:opacity .7s ease, transform .7s ease; }
+    .reveal.visible { opacity:1; transform:translateY(0); }
+
+    /* 90-day rail */
+    .day-rail { position:relative; height:5px; border-radius:3px; background:var(--line); margin-top:8px; overflow:hidden; }
+    .day-rail-fill { position:absolute; left:0; top:0; height:100%; width:0%; background:linear-gradient(90deg, var(--gold-soft), var(--olive-green)); transition:width 1.4s cubic-bezier(.2,.8,.2,1); }
+    .day-marker { position:absolute; top:-4px; width:1px; height:13px; background:var(--ink); opacity:.35; }
+    .phase-col { border-left:1px solid var(--line); padding-left:20px; }
+    .phase-col .num { font-family:'Source Serif 4',serif; font-size:34px; color:var(--ink); line-height:1; }
+    .phase-col .num sup { font-size:14px; color:var(--ink-soft); top:-14px; }
+
+    .problem-row { display:flex; align-items:flex-start; gap:12px; padding:14px 0; border-bottom:1px solid var(--line); }
+    .problem-row:last-child { border-bottom:none; }
+    .problem-row i { color:var(--muted-red); font-size:12px; margin-top:5px; }
+
+    .fixed-dl {
+      position:fixed; right:22px; bottom:22px; z-index:998;
+      background:var(--paper-card); border:1px solid var(--line);
+      border-radius:2px; padding:11px 18px; font-size:12px; letter-spacing:.04em;
+      color:var(--ink); box-shadow:0 8px 24px rgba(20,30,50,.08); transition:.2s;
+    }
+    .fixed-dl:hover { border-color:var(--gold); color:var(--gold); }
+
+    .rev-card .tag-pill {
+      display:inline-block; font-size:10px; letter-spacing:.1em; text-transform:uppercase;
+      color:var(--gold); border:1px solid var(--gold); border-radius:20px;
+      padding:3px 10px; margin-top:14px;
+    }
+
+    /* ecosystem */
+    .eco-wrap { position:relative; max-width:340px; margin:0 auto; }
+    .eco-node {
+      background:var(--paper-card); border:1px solid var(--line);
+      border-radius:4px; padding:16px 22px; text-align:center;
+      font-family:'Source Serif 4',serif; font-size:16px; color:var(--ink);
+      position:relative; z-index:2;
+    }
+    .eco-node.core { border-color:var(--gold); background:var(--ink); color:var(--paper); font-size:17px; padding:20px 22px; }
+    .eco-node .sub { display:block; font-family:'Inter',sans-serif; font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-soft); margin-top:4px; font-weight:600; }
+    .eco-node.core .sub { color:var(--gold-soft); }
+    .eco-line { width:1px; background:var(--line); height:36px; margin:0 auto; position:relative; overflow:hidden; }
+    .eco-line .fill { position:absolute; top:0; left:0; width:100%; height:0%; background:var(--gold); }
+
+    .map-box { border:1px solid var(--line); border-radius:6px; background:var(--paper-card); padding:40px 28px; }
+    .map-dot { width:9px; height:9px; border-radius:50%; background:var(--gold); position:relative; }
+    .map-dot::after { content:''; position:absolute; inset:-6px; border:1px solid var(--gold); border-radius:50%; opacity:.4; }
+    .map-label { font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-soft); font-weight:600; }
+
+    details.faq { border-bottom:1px solid var(--line); padding:20px 0; }
+    details.faq:first-child { border-top:1px solid var(--line); }
+    details.faq summary { list-style:none; cursor:pointer; display:flex; justify-content:space-between; align-items:center; font-family:'Source Serif 4',serif; font-size:18px; color:var(--ink); }
+    details.faq summary::-webkit-details-marker { display:none; }
+    details.faq summary .plus { color:var(--gold); font-size:14px; transition:.25s; flex:none; margin-left:16px; }
+    details.faq[open] summary .plus { transform:rotate(45deg); }
+    details.faq p { color:var(--ink-soft); font-size:14.5px; line-height:1.75; margin-top:14px; max-width:680px; }
+
+    .partner-card { position:relative; padding-top:36px; }
+    .status {
+      position:absolute; top:20px; right:20px;
+      display:inline-flex; align-items:center; gap:6px;
+      font-size:10px; letter-spacing:.08em; text-transform:uppercase; font-weight:600;
+      color:var(--olive-green); background:rgba(92,107,60,.08);
+      border:1px solid var(--olive-light); border-radius:20px; padding:4px 10px;
+    }
+    .status::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--olive-green); flex:none; }
+
+    .avatar { width:96px; height:96px; border-radius:50%; background:var(--olive-green); color:white; display:flex; align-items:center; justify-content:center; font-family:'Source Serif 4',serif; font-size:30px; flex:none; }
+    .founder-pill { font-size:11px; letter-spacing:.05em; color:var(--ink-soft); border:1px solid var(--line); border-radius:20px; padding:5px 14px; }
+
+    .site-footer { background:var(--navy-deep); border-top:1px solid rgba(255,255,255,.08); padding:40px 28px 32px; }
+    .site-footer-inner { max-width:1100px; margin:0 auto; display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:20px; }
+    .footer-links { display:flex; gap:22px; }
+    .footer-links a { color:#8893A6; font-size:15px; transition:.2s; }
+    .footer-links a:hover { color:var(--gold-soft); }
+
+    #cover {
+      background:
+        linear-gradient(180deg, rgba(11,26,42,.72) 0%, rgba(11,26,42,.55) 45%, rgba(11,26,42,.85) 100%),
+        url('images/hero-thailand-laos.jpg') center center / cover no-repeat;
+    }
+    #cover .eyebrow { color: var(--gold-soft); }
+    #cover h1.serif { color: #F7F5EF !important; }
+    #cover h2.serif { color: var(--gold-soft) !important; }
+    #cover p.page-lede { color: #D6DAE2 !important; }
+    #cover .btn-outline-dark { border-color: rgba(255,255,255,.55); color: #F7F5EF; }
+    #cover .btn-outline-dark:hover { background: rgba(255,255,255,.1); color: #fff; }
+    #cover svg line[stroke="var(--ink)"],
+    #cover svg rect[stroke="var(--ink)"] { stroke: #E8E6E0; }
+    #cover svg text[fill="var(--ink-soft)"] { fill: #C7CDD8; }
+
+    @media (max-width:768px) { .page-inner { padding:90px 20px; } }
+    @media (max-width:640px) {
+      .fixed-dl { display:none; }
+      .topbar .wordmark .sub-mark { display:none; }
+    }
+
+    .lang-toggle {
+      display: flex; gap: 4px; font-size: 12px; background: var(--paper-card);
+      border:1px solid var(--line); border-radius: 20px; padding: 3px 5px;
+    }
+    .lang-toggle button {
+      background: transparent; border: none; padding: 5px 12px; border-radius: 20px;
+      font-weight: 500; color: var(--ink-soft); cursor: pointer; transition: .2s;
+    }
+    .lang-toggle button.active {
+      background: var(--olive-green); color: white;
+    }
+    .img-placeholder {
+      background: #eae5d7;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--ink-soft);
+      font-size: 14px;
+      padding: 32px 16px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .img-placeholder i { font-size: 28px; color: var(--olive-green); }
+  </style>
+</head>
+<body id="top">
+
+<!-- progress rail -->
+<div class="progress-rail" id="progressRail"></div>
+
+<!-- Topbar -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="#top" class="wordmark" style="text-decoration:none; cursor:pointer;">WOS <span class="sub-mark">Healthcare Hospitality</span></a>
+    <div class="flex items-center gap-6">
+      <nav class="top-nav">
+        <a href="#revenue" data-th="แหล่งรายได้" data-en="Revenue Streams">Revenue Streams</a>
+        <a href="#why-wos" data-th="ทำไมต้อง WOS" data-en="Why WOS">Why WOS</a>
+        <a href="#pilot" data-th="โปรแกรมนำร่อง" data-en="Pilot Program">Pilot Program</a>
+        <a href="#faq" data-th="คำถามที่พบบ่อย" data-en="FAQ">FAQ</a>
+      </nav>
+      <div class="flex items-center gap-4">
+        <div class="lang-toggle">
+          <button id="langTh" class="active">ไทย</button>
+          <button id="langEn">EN</button>
+        </div>
+        <a href="#cta" class="book-call">Book Discovery Meeting</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<a href="#cta" class="fixed-dl"><i class="fas fa-calendar-check mr-1"></i> Schedule a 30-Minute Meeting</a>
+
+<!-- ============ HERO ============ -->
+<section id="cover" class="min-h-screen flex items-center relative" style="padding-top:64px;">
+  <div class="max-w-[900px] mx-auto w-full px-7 text-center reveal">
+    <div class="eyebrow mb-8" data-th="แพลตฟอร์มข้ามพรมแดนด้านสุขภาพและการต้อนรับ" data-en="Cross-Border Healthcare &amp; Hospitality Platform">Cross-Border Healthcare &amp; Hospitality Platform</div>
+    <h1 class="serif" style="font-weight:500; font-size:clamp(34px,5.6vw,60px); line-height:1.18; color:var(--ink);">
+      <span data-th="สร้างอนาคตของการ" data-en="Building the Future of">Building the Future of</span><br>
+      <span data-th="การดูแลสุขภาพและการต้อนรับ" data-en="Healthcare Hospitality">Healthcare Hospitality</span>
+    </h1>
+    <h2 class="serif" style="font-weight:400; font-size:clamp(20px,2.8vw,28px); line-height:1.3; color:var(--gold); margin-top:16px;">
+      ไทย ↔ ลาว
+    </h2>
+    <p class="page-lede mx-auto mt-8" style="max-width:560px;" data-th="เพิ่มรายได้โรงแรมผ่านการดูแลสุขภาพ สุขภาพองค์รวม และความร่วมมือข้ามพรมแดน" data-en="Increase hotel revenue through healthcare, wellness &amp; cross-border partnerships.">
+      Increase hotel revenue through healthcare, wellness &amp; cross-border partnerships.
+    </p>
+    <div class="flex flex-wrap justify-center gap-4 mt-12">
+      <a href="#cta" class="btn-primary">
+        <i class="fas fa-arrow-right mr-1"></i>
+        <span data-th="จองการประชุม" data-en="Book Discovery Meeting">Book Discovery Meeting</span>
+      </a>
+      <a href="#partners" class="btn-outline-dark">
+        <span data-th="เข้าร่วมเป็นโรงแรมนำร่อง" data-en="Become a Pilot Hotel">Become a Pilot Hotel</span>
+      </a>
+    </div>
+    <div class="mt-16 reveal">
+      <svg viewBox="0 0 760 200" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:640px; margin:0 auto; display:block;">
+        <line x1="20" y1="168" x2="740" y2="168" stroke="var(--line)" stroke-width="1"/>
+        <g>
+          <rect x="70" y="70" width="130" height="98" fill="none" stroke="var(--ink)" stroke-width="1.4"/>
+          <line x1="70" y1="96" x2="200" y2="96" stroke="var(--ink)" stroke-width="1"/>
+          <line x1="70" y1="122" x2="200" y2="122" stroke="var(--ink)" stroke-width="1"/>
+          <line x1="70" y1="148" x2="200" y2="148" stroke="var(--ink)" stroke-width="1"/>
+          <line x1="108" y1="70" x2="108" y2="168" stroke="var(--ink)" stroke-width="1" opacity=".5"/>
+          <line x1="146" y1="70" x2="146" y2="168" stroke="var(--ink)" stroke-width="1" opacity=".5"/>
+          <line x1="184" y1="70" x2="184" y2="168" stroke="var(--ink)" stroke-width="1" opacity=".5"/>
+          <rect x="120" y="140" width="30" height="28" fill="none" stroke="var(--gold)" stroke-width="1.4"/>
+          <text x="135" y="52" text-anchor="middle" font-family="Source Serif 4, serif" font-size="13" fill="var(--ink-soft)">HOTEL</text>
+        </g>
+        <path d="M210,150 Q380,90 550,150" fill="none" stroke="var(--gold-soft)" stroke-width="1.6" stroke-dasharray="4 5"/>
+        <circle cx="380" cy="106" r="4" fill="var(--gold)"/>
+        <g>
+          <rect x="560" y="80" width="110" height="88" fill="none" stroke="var(--ink)" stroke-width="1.4"/>
+          <line x1="560" y1="106" x2="670" y2="106" stroke="var(--ink)" stroke-width="1"/>
+          <line x1="560" y1="132" x2="670" y2="132" stroke="var(--ink)" stroke-width="1"/>
+          <g transform="translate(615,60)">
+            <rect x="-3" y="-14" width="6" height="20" fill="var(--muted-red)"/>
+            <rect x="-10" y="-7" width="20" height="6" fill="var(--muted-red)"/>
+          </g>
+          <text x="615" y="46" text-anchor="middle" font-family="Source Serif 4, serif" font-size="13" fill="var(--ink-soft)">HOSPITAL</text>
+        </g>
+        <g font-family="Inter, sans-serif" font-size="10" letter-spacing="1" fill="var(--ink-soft)">
+          <text x="135" y="186" text-anchor="middle">THAILAND</text>
+          <text x="615" y="186" text-anchor="middle">LAOS</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 01 PROBLEMS ============ -->
+<section id="problems" class="page">
+  <div class="page-inner wide">
+    <div class="page-meta reveal">
+      <span class="tag" data-th="01 — ความจริงที่โรงแรมเผชิญ" data-en="01 — The Reality Hotels Face">01 — The Reality Hotels Face</span>
+      <span class="count">01 / 09</span>
+    </div>
+    <div class="reveal">
+      <h2 class="page-title" data-th="เจ้าของโรงแรมทุกคนในตลาดนี้รู้จักปัญหาทั้งห้านี้" data-en="Every hotel owner in this market knows these five problems.">Every hotel owner in this market knows these five problems.</h2>
+    </div>
+    <div class="mt-12 reveal max-w-[640px]">
+      <div class="problem-row"><i class="fas fa-xmark"></i><span data-th="การแข่งขันด้านราคากับโรงแรมใกล้เคียง" data-en="Competing on price with every hotel nearby">Competing on price with every hotel nearby</span></div>
+      <div class="problem-row"><i class="fas fa-xmark"></i><span data-th="ฤดูกาลท่องเที่ยวต่ำที่ยาวนานและคาดเดาไม่ได้" data-en="Long, unpredictable low season">Long, unpredictable low season</span></div>
+      <div class="problem-row"><i class="fas fa-xmark"></i><span data-th="แขกพักแค่คืนเดียวแล้วจากไป" data-en="Guests staying just one night, then gone">Guests staying just one night, then gone</span></div>
+      <div class="problem-row"><i class="fas fa-xmark"></i><span data-th="ไม่มีจุดแตกต่างที่แท้จริงจากโรงแรมข้างๆ" data-en="No real point of difference from the hotel next door">No real point of difference from the hotel next door</span></div>
+      <div class="problem-row"><i class="fas fa-xmark"></i><span data-th="ไม่มีพันธมิตรด้านสุขภาพเพื่อสร้างแพ็คเกจระยะยาว" data-en="No healthcare partner to build a longer-stay offer around">No healthcare partner to build a longer-stay offer around</span></div>
+    </div>
+    <div class="hairline my-14"></div>
+    <div class="reveal">
+      <p class="serif" style="font-size:clamp(20px,2.6vw,26px); color:var(--ink);" data-th="WOS เปลี่ยนปัญหาเหล่านี้ให้เป็นเครื่องยนต์สร้างรายได้ใหม่" data-en="WOS turns these problems into a new revenue engine.">WOS turns these problems into a new revenue engine.</p>
+    </div>
+    <div class="mt-10 reveal">
+      <svg viewBox="0 0 760 130" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:560px; margin:0 auto; display:block;">
+        <line x1="10" y1="112" x2="750" y2="112" stroke="var(--line)" stroke-width="1"/>
+        <polyline points="10,95 90,102 170,84 250,96 330,60 410,68 490,38 570,44 650,18 740,10"
+          fill="none" stroke="var(--olive-green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="10" cy="95" r="3.5" fill="var(--muted-red)"/>
+        <circle cx="740" cy="10" r="4" fill="var(--gold)"/>
+        <text x="10" y="128" font-family="Inter, sans-serif" font-size="10" letter-spacing=".08em" fill="var(--ink-soft)">FIVE RECURRING PROBLEMS</text>
+        <text x="740" y="128" text-anchor="end" font-family="Inter, sans-serif" font-size="10" letter-spacing=".08em" fill="var(--gold)">A NEW REVENUE ENGINE</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 02 REVENUE ============ -->
+<section id="revenue" class="page">
+  <div class="page-inner wide">
+    <div class="page-meta reveal">
+      <span class="tag" data-th="02 — แหล่งรายได้ใหม่" data-en="02 — New Revenue Streams">02 — New Revenue Streams</span>
+      <span class="count">02 / 09</span>
+    </div>
+    <div class="reveal">
+      <h2 class="page-title" data-th="หกวิธีใหม่ที่ห้องพักของคุณสร้างรายได้" data-en="Six new ways your rooms can earn.">Six new ways your rooms can earn.</h2>
+      <p class="page-lede" data-th="แต่ละช่องทางคือเหตุผลที่ทำให้แขกพักนานขึ้น จ่ายมากขึ้น และกลับมา" data-en="Each stream is a reason for a guest to book longer, pay more, and come back.">Each stream is a reason for a guest to book longer, pay more, and come back.</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-14">
+      <div class="card rev-card reveal"><div class="serif" style="font-size:19px;" data-th="Health Check Stay" data-en="Health Check Stay">Health Check Stay</div><p class="text-sm mt-2" style="color:var(--ink-soft); line-height:1.7;" data-th="การพักระยะสั้นที่ผูกกับการตรวจสุขภาพในโรงพยาบาล" data-en="Short stays built around a hospital health screening.">Short stays built around a hospital health screening.</p><span class="tag-pill" data-th="โอกาสสร้างรายได้" data-en="Revenue Opportunity">Revenue Opportunity</span></div>
+      <div class="card rev-card reveal"><div class="serif" style="font-size:19px;" data-th="Executive Wellness" data-en="Executive Wellness">Executive Wellness</div><p class="text-sm mt-2" style="color:var(--ink-soft); line-height:1.7;" data-th="การพักพรีเมียมสำหรับผู้บริหารที่ต้องการผ่อนคลายและดูแลสุขภาพ" data-en="Premium stays for executives who want to combine rest with health.">Premium stays for executives who want to combine rest with health.</p><span class="tag-pill" data-th="โอกาสสร้างรายได้" data-en="Revenue Opportunity">Revenue Opportunity</span></div>
+      <div class="card rev-card reveal"><div class="serif" style="font-size:19px;" data-th="Recovery Stay" data-en="Recovery Stay">Recovery Stay</div><p class="text-sm mt-2" style="color:var(--ink-soft); line-height:1.7;" data-th="ห้องพักแสนสบายสำหรับผู้ป่วยพักฟื้นหลังการรักษา" data-en="Comfortable rooms for guests recovering after hospital treatment.">Comfortable rooms for guests recovering after hospital treatment.</p><span class="tag-pill" data-th="โอกาสสร้างรายได้" data-en="Revenue Opportunity">Revenue Opportunity</span></div>
+      <div class="card rev-card reveal"><div class="serif" style="font-size:19px;" data-th="Long Stay" data-en="Long Stay">Long Stay</div><p class="text-sm mt-2" style="color:var(--ink-soft); line-height:1.7;" data-th="แพ็คเกจหลายสัปดาห์เปลี่ยนแขกหนึ่งคืนให้เป็นผู้พักอาศัย" data-en="Multi-week packages that turn a one-night guest into a resident.">Multi-week packages that turn a one-night guest into a resident.</p><span class="tag-pill" data-th="โอกาสสร้างรายได้" data-en="Revenue Opportunity">Revenue Opportunity</span></div>
+      <div class="card rev-card reveal"><div class="serif" style="font-size:19px;" data-th="Corporate Wellness" data-en="Corporate Wellness">Corporate Wellness</div><p class="text-sm mt-2" style="color:var(--ink-soft); line-height:1.7;" data-th="การพักผ่อนองค์กรที่ผสานกับโปรแกรมสุขภาพ" data-en="Company retreats bundled with health and wellness programming.">Company retreats bundled with health and wellness programming.</p><span class="tag-pill" data-th="โอกาสสร้างรายได้" data-en="Revenue Opportunity">Revenue Opportunity</span></div>
+      <div class="card rev-card reveal" style="border-color:var(--gold);"><div class="serif" style="font-size:19px;" data-th="Cross Border Package" data-en="Cross Border Package">Cross Border Package</div><p class="text-sm mt-2" style="color:var(--ink-soft); line-height:1.7;" data-th="แพ็คเกจสำหรับผู้ป่วยและครอบครัวจากลาว" data-en="Packages built for patients and families travelling from Laos.">Packages built for patients and families travelling from Laos.</p><span class="tag-pill" data-th="โอกาสสร้างรายได้" data-en="Revenue Opportunity">Revenue Opportunity</span></div>
+    </div>
+    <div class="mt-12 reveal">
+      <svg viewBox="0 0 760 70" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:560px; margin:0 auto; display:block;">
+        <line x1="65" y1="30" x2="695" y2="30" stroke="var(--line)" stroke-width="1"/>
+        <g fill="var(--olive-green)">
+          <circle cx="65" cy="30" r="4"/><circle cx="191" cy="30" r="4"/><circle cx="317" cy="30" r="4"/>
+          <circle cx="443" cy="30" r="4"/><circle cx="569" cy="30" r="4"/><circle cx="695" cy="30" r="4.5" fill="var(--gold)"/>
+        </g>
+        <g font-family="Inter, sans-serif" font-size="10" fill="var(--ink-soft)" text-anchor="middle" letter-spacing=".02em">
+          <text x="65" y="52">Health Check</text>
+          <text x="191" y="52">Executive</text>
+          <text x="317" y="52">Recovery</text>
+          <text x="443" y="52">Long Stay</text>
+          <text x="569" y="52">Corporate</text>
+          <text x="695" y="52" fill="var(--gold)" font-weight="600">Cross Border</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 03 WHY WOS ============ -->
+<section id="why-wos" class="page">
+  <div class="page-inner wide">
+    <div class="page-meta reveal">
+      <span class="tag" data-th="03 — ทำไมต้อง WOS" data-en="03 — Why WOS">03 — Why WOS</span>
+      <span class="count">03 / 09</span>
+    </div>
+    <div class="reveal">
+      <h2 class="page-title" data-th="ไม่ใช่ที่ปรึกษา แต่เป็นพันธมิตรที่สร้างและเชื่อมต่อ" data-en="Not a consultant. A partner that builds and connects.">Not a consultant. A partner that builds and connects.</h2>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-14">
+      <div class="card reveal"><i class="fas fa-arrows-left-right" style="color:var(--gold);"></i><div class="serif mt-3" style="font-size:19px;" data-th="เครือข่ายข้ามพรมแดน" data-en="Cross Border Network">Cross Border Network</div><p class="text-sm mt-2" style="color:var(--ink-soft); line-height:1.7;" data-th="ความสัมพันธ์โดยตรงทั้งสองฝั่งชายแดนไทย–ลาว" data-en="Direct relationships on both sides of the Thailand–Laos border.">Direct relationships on both sides of the Thailand–Laos border.</p></div>
+      <div class="card reveal"><i class="fas fa-house-medical" style="color:var(--gold);"></i><div class="serif mt-3" style="font-size:19px;" data-th="ความร่วมมือกับโรงพยาบาล" data-en="Hospital Partnership">Hospital Partnership</div><p class="text-sm mt-2" style="color:var(--ink-soft); line-height:1.7;" data-th="ความสัมพันธ์กับโรงพยาบาลที่ดำเนินการจริง ไม่ใช่แค่รายชื่อติดต่อ" data-en="Working hospital relationships, not a directory of contacts.">Working hospital relationships, not a directory of contacts.</p></div>
+      <div class="card reveal"><i class="fas fa-handshake" style="color:var(--gold);"></i><div class="serif mt-3" style="font-size:19px;" data-th="พัฒนาธุรกิจ" data-en="Business Development">Business Development</div><p class="text-sm mt-2" style="color:var(--ink-soft); line-height:1.7;" data-th="เราช่วยขายแพ็คเกจ ไม่ใช่แค่ออกแบบ" data-en="We help sell the packages, not just design them.">We help sell the packages, not just design them.</p></div>
+      <div class="card reveal"><i class="fas fa-spa" style="color:var(--gold);"></i><div class="serif mt-3" style="font-size:19px;" data-th="กลยุทธ์สุขภาพองค์รวม" data-en="Wellness Strategy">Wellness Strategy</div><p class="text-sm mt-2" style="color:var(--ink-soft); line-height:1.7;" data-th="กลยุทธ์ที่ออกแบบสำหรับโรงแรมของคุณโดยเฉพาะ ไม่ใช่เทมเพลตทั่วไป" data-en="A strategy built for your property, not a generic template.">A strategy built for your property, not a generic template.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 04 ECOSYSTEM ============ -->
+<section id="ecosystem" class="page">
+  <div class="page-inner">
+    <div class="page-meta reveal">
+      <span class="tag" data-th="04 — ระบบนิเวศ" data-en="04 — The Ecosystem">04 — The Ecosystem</span>
+      <span class="count">04 / 09</span>
+    </div>
+    <div class="reveal">
+      <h2 class="page-title" data-th="แพลตฟอร์มเดียว เชื่อมต่อทุกสิ่งที่แขกต้องการ" data-en="One platform, connecting everyone your guest needs.">One platform, connecting everyone your guest needs.</h2>
+    </div>
+    <div class="eco-wrap mt-16" id="ecoContainer">
+      <div class="eco-node reveal" data-eco="1">Hospital<span class="sub">Clinical Care</span></div>
+      <div class="eco-line" data-line="1"><div class="fill"></div></div>
+      <div class="eco-node core reveal" data-eco="2">WOS Platform<span class="sub">Orchestration</span></div>
+      <div class="eco-line" data-line="2"><div class="fill"></div></div>
+      <div class="eco-node reveal" data-eco="3">Hotel<span class="sub">Stay &amp; Hospitality</span></div>
+      <div class="eco-line" data-line="3"><div class="fill"></div></div>
+      <div class="eco-node reveal" data-eco="4">Patient<span class="sub">The Guest</span></div>
+      <div class="eco-line" data-line="4"><div class="fill"></div></div>
+      <div class="eco-node reveal" data-eco="5">Insurance<span class="sub">Coverage</span></div>
+      <div class="eco-line" data-line="5"><div class="fill"></div></div>
+      <div class="eco-node reveal" data-eco="6">Wellness Partner<span class="sub">Programs</span></div>
+    </div>
+    <p class="text-xs mt-10 reveal text-center" style="color:var(--ink-soft); letter-spacing:.06em;" data-th="ระบบนิเวศ WOS — ทุกฝ่ายเชื่อมต่อกันผ่านแพลตฟอร์มเดียว" data-en="The WOS ecosystem — every party connected through one platform.">The WOS ecosystem — every party connected through one platform.</p>
+  </div>
+</section>
+
+<!-- ============ 05 WHY UDON ============ -->
+<section id="why-udon" class="page">
+  <div class="page-inner wide">
+    <div class="page-meta reveal">
+      <span class="tag" data-th="05 — ทำไมอุดรธานี" data-en="05 — Why Udon Thani">05 — Why Udon Thani</span>
+      <span class="count">05 / 09</span>
+    </div>
+    <div class="reveal">
+      <h2 class="page-title" data-th="ประตูเชื่อมระหว่างไทยและลาว" data-en="The gateway between Thailand and Laos.">The gateway between Thailand and Laos.</h2>
+    </div>
+    <div class="map-box mt-14 reveal">
+      <div class="flex items-center justify-center gap-10 md:gap-20 flex-wrap">
+        <div class="text-center"><div class="map-dot mx-auto"></div><div class="serif mt-4" style="font-size:18px;">Udon Thani</div><div class="map-label mt-1">Thailand</div></div>
+        <div class="hidden md:block" style="width:120px; border-top:1px dashed var(--line); position:relative; top:-14px;"></div>
+        <div class="text-center"><div class="map-dot mx-auto"></div><div class="serif mt-4" style="font-size:18px;">Vientiane</div><div class="map-label mt-1">Laos</div></div>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mt-14 text-center">
+        <div><div class="map-label" data-th="ประตูเชื่อม" data-en="Gateway">Gateway</div></div>
+        <div><div class="map-label" data-th="สนามบิน" data-en="Airport">Airport</div></div>
+        <div><div class="map-label" data-th="ศูนย์กลางการแพทย์" data-en="Medical Hub">Medical Hub</div></div>
+        <div><div class="map-label" data-th="ธุรกิจข้ามพรมแดน" data-en="Cross Border Business">Cross Border Business</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 06 PILOT ============ -->
+<section id="pilot" class="page">
+  <div class="page-inner wide">
+    <div class="page-meta reveal">
+      <span class="tag" data-th="06 — โปรแกรมนำร่อง" data-en="06 — Pilot Program">06 — Pilot Program</span>
+      <span class="count">06 / 09</span>
+    </div>
+    <div class="reveal"><h2 class="page-title" data-th="90 วัน · 3 ระยะ" data-en="90 days · 3 phases">90 days · 3 phases</h2></div>
+    <div class="mt-14 reveal">
+      <div class="day-rail"><div class="day-rail-fill" id="dayFill"></div><div class="day-marker" style="left:0%;"></div><div class="day-marker" style="left:33.3%;"></div><div class="day-marker" style="left:66.6%;"></div><div class="day-marker" style="left:100%;"></div></div>
+      <div class="flex justify-between text-xs mt-2" style="color:var(--ink-soft);"><span>Day 0</span><span>Day 30</span><span>Day 60</span><span>Day 90</span></div>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mt-14">
+      <div class="phase-col reveal" style="border-left-color:var(--gold);"><div class="num">01<sup>30 days</sup></div><div class="serif mt-3" style="font-size:19px; color:var(--ink);" data-th="ค้นพบและประเมิน" data-en="Discovery &amp; Assessment">Discovery &amp; Assessment</div><p class="text-sm mt-2" style="color:var(--ink-soft); line-height:1.7;" data-th="สำรวจทรัพย์สิน สัมภาษณ์ผู้บริหาร วิเคราะห์ศักยภาพรายได้" data-en="Property walkthrough, leadership interviews, revenue potential mapped.">Property walkthrough, leadership interviews, revenue potential mapped.</p></div>
+      <div class="phase-col reveal"><div class="num">02<sup>30 days</sup></div><div class="serif mt-3" style="font-size:19px; color:var(--ink);" data-th="ออกแบบโปรแกรม" data-en="Program Design">Program Design</div><p class="text-sm mt-2" style="color:var(--ink-soft); line-height:1.7;" data-th="สร้างแพ็คเกจ จับคู่โรงพยาบาลและพันธมิตรด้านสุขภาพ" data-en="Packages built, hospital and wellness partners aligned, structure agreed.">Packages built, hospital and wellness partners aligned, structure agreed.</p></div>
+      <div class="phase-col reveal"><div class="num">03<sup>30 days</sup></div><div class="serif mt-3" style="font-size:19px; color:var(--ink);" data-th="เปิดตัวนำร่องและประเมินผล" data-en="Pilot Launch &amp; Evaluation">Pilot Launch &amp; Evaluation</div><p class="text-sm mt-2" style="color:var(--ink-soft); line-height:1.7;" data-th="เริ่มต้นด้วยแขกจริง ติดตามผล และวางแผนขยายผล" data-en="Live with real guests, results tracked, plan set for scale.">Live with real guests, results tracked, plan set for scale.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 07 FOUNDER ============ -->
+<section id="founder" class="page">
+  <div class="page-inner">
+    <div class="page-meta reveal">
+      <span class="tag" data-th="07 — ผู้ก่อตั้ง" data-en="07 — Founder">07 — Founder</span>
+      <span class="count">07 / 09</span>
+    </div>
+    <div class="reveal flex items-center gap-6 flex-wrap">
+      <div class="avatar">PP</div>
+      <div><div class="serif" style="font-size:22px; color:var(--ink);">Pavarit Puangsrithiti</div><p class="text-sm mt-1" style="color:var(--ink-soft);">Founder, WOS</p></div>
+    </div>
+    <div class="flex flex-wrap gap-3 mt-8 reveal">
+      <span class="founder-pill" data-th="ข้ามพรมแดน ไทย–ลาว" data-en="Cross Border Thailand–Laos">Cross Border Thailand–Laos</span>
+      <span class="founder-pill" data-th="พัฒนาธุรกิจ" data-en="Business Development">Business Development</span>
+      <span class="founder-pill" data-th="เครือข่าย" data-en="Networking">Networking</span>
+      <span class="founder-pill" data-th="การดูแลสุขภาพและการต้อนรับ" data-en="Healthcare Hospitality">Healthcare Hospitality</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 08 PARTNERS ============ -->
+<section id="partners" class="page">
+  <div class="page-inner wide">
+    <div class="page-meta reveal">
+      <span class="tag" data-th="08 — พันธมิตรผู้ก่อตั้ง" data-en="08 — Founding Partners">08 — Founding Partners</span>
+      <span class="count">08 / 09</span>
+    </div>
+    <div class="reveal">
+      <h2 class="page-title" data-th="กำลังคัดเลือก" data-en="Currently selecting.">Currently selecting.</h2>
+      <p class="page-lede" data-th="กลุ่มผู้ก่อตั้งจำนวนจำกัดที่ร่วมสร้างโมเดลตั้งแต่วันแรก" data-en="A limited group of founders shaping the model from day one.">A limited group of founders shaping the model from day one.</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-14">
+      <div class="card partner-card reveal"><span class="status" data-th="กำลังคัดเลือก" data-en="Currently Selecting">Currently Selecting</span><div class="serif mt-3" style="font-size:19px;" data-th="โรงแรมนำร่อง" data-en="Pilot Hotels">Pilot Hotels</div></div>
+      <div class="card partner-card reveal"><span class="status" data-th="ยืนยันแล้ว" data-en="Confirmed">Confirmed</span><div class="serif mt-3" style="font-size:19px;" data-th="โรงพยาบาลกรุงเทพอุดร" data-en="Bangkok Hospital Udon">Bangkok Hospital Udon</div></div>
+      <div class="card partner-card reveal"><span class="status" data-th="กำลังคัดเลือก" data-en="Currently Selecting">Currently Selecting</span><div class="serif mt-3" style="font-size:19px;" data-th="พันธมิตรเชิงกลยุทธ์" data-en="Strategic Partners">Strategic Partners</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 09 FAQ ============ -->
+<section id="faq" class="page">
+  <div class="page-inner">
+    <div class="page-meta reveal">
+      <span class="tag" data-th="09 — คำถามที่พบบ่อย" data-en="09 — Frequently Asked">09 — Frequently Asked</span>
+      <span class="count">09 / 09</span>
+    </div>
+    <div class="reveal"><h2 class="page-title" data-th="คำถามที่เจ้าของโรงแรมถามเป็นอันดับแรก" data-en="Questions hotel owners ask first.">Questions hotel owners ask first.</h2></div>
+    <div class="mt-12 reveal">
+      <details class="faq"><summary><span data-th="ต้องลงทุนเท่าไหร่?" data-en="How much investment is required?">How much investment is required?</span> <span class="plus"><i class="fas fa-plus"></i></span></summary><p data-th="ไม่มีค่าใช้จ่ายก้าวแรก และไม่ต้องรีโนเวทครับ โรงแรมส่วนใหญ่สามารถใช้ห้องพักและสิ่งอำนวยความสะดวกเดิมที่มีอยู่ได้ทันที โดยรายละเอียดและโมเดลการแบ่งรายได้ (Revenue Sharing) เราจะมาดีไซน์ร่วมกันในขั้นตอน Program Design หลังจากที่ได้พูดคุยใน Discovery Call ครับ" data-en="There's no cost for the first step, and no renovation needed. Most hotels can start right away using their existing rooms and facilities. The details and revenue-sharing model are designed together during Program Design, after the Discovery Call.">There's no cost for the first step, and no renovation needed. Most hotels can start right away using their existing rooms and facilities. The details and revenue-sharing model are designed together during Program Design, after the Discovery Call.</p></details>
+      <details class="faq"><summary><span data-th="ระยะเวลานำร่องนานเท่าไหร่?" data-en="How long does the pilot take?">How long does the pilot take?</span> <span class="plus"><i class="fas fa-plus"></i></span></summary><p data-th="โปรแกรมนำร่องใช้เวลา 90 วัน แบ่งเป็น 3 ระยะ: ค้นพบ ออกแบบ และเปิดตัว" data-en="The pilot runs 90 days across three phases: discovery, program design, and launch.">The pilot runs 90 days across three phases: discovery, program design, and launch.</p></details>
+      <details class="faq"><summary><span data-th="โรงแรมแบบไหนเหมาะกับโปรแกรมนี้?" data-en="What kind of hotel is this suited for?">What kind of hotel is this suited for?</span> <span class="plus"><i class="fas fa-plus"></i></span></summary><p data-th="เราเปิดรับโรงแรมที่ต้องการยกระดับสู่ Healthcare Hospitality โดยมีเกณฑ์แนะนำเบื้องต้นดังนี้ครับ:<br>&bull; มีจำนวนห้องพักที่พร้อมรองรับโครงการ (แนะนำ 30 ห้องขึ้นไป เพื่อความคุ้มค่าในการบริหารจัดการ)<br>&bull; ตั้งอยู่ในพื้นที่ที่เชื่อมต่อกับโรงพยาบาลพันธมิตรได้สะดวก (โดยเฉพาะในโซนอุดรธานีที่เชื่อมต่อกับ สปป.ลาว)<br>&bull; มีวิสัยทัศน์ที่ต้องการสร้างจุดเด่นและรายได้ช่องทางใหม่ นอกเหนือจากการขายห้องพักแบบเดิมๆ" data-en="We welcome hotels looking to elevate into Healthcare Hospitality. Recommended baseline criteria:<br>&bull; Enough rooms to support the program (30+ recommended for efficient management)<br>&bull; Located within easy reach of a partner hospital (especially in the Udon Thani zone connecting to Laos PDR)<br>&bull; A vision to build a new revenue channel and point of difference, beyond traditional room sales">We welcome hotels looking to elevate into Healthcare Hospitality. Recommended baseline criteria:<br>&bull; Enough rooms to support the program (30+ recommended for efficient management)<br>&bull; Located within easy reach of a partner hospital (especially in the Udon Thani zone connecting to Laos PDR)<br>&bull; A vision to build a new revenue channel and point of difference, beyond traditional room sales</p></details>
+      <details class="faq"><summary><span data-th="มีค่าใช้จ่ายในการเข้าร่วมนำร่องหรือไม่?" data-en="Is there a cost to join the pilot?">Is there a cost to join the pilot?</span> <span class="plus"><i class="fas fa-plus"></i></span></summary><p data-th="ไม่มีค่าใช้จ่ายก้าวแรก และไม่ต้องรีโนเวทเพื่อเข้าร่วมนำร่อง เงื่อนไขทางการค้าจะตกลงกันในขั้นตอนการออกแบบโปรแกรม" data-en="No cost for the first step, and no renovation needed to join the pilot. Any commercial terms are agreed together during Program Design.">No cost for the first step, and no renovation needed to join the pilot. Any commercial terms are agreed together during Program Design.</p></details>
+      <details class="faq"><summary><span data-th="WOS ทำอะไรจริงๆ?" data-en="What does WOS actually do?">What does WOS actually do?</span> <span class="plus"><i class="fas fa-plus"></i></span></summary><p data-th="เราเชื่อมต่อโรงแรมของคุณกับโรงพยาบาล พันธมิตรด้านสุขภาพ และผู้ป่วยข้ามพรมแดน และช่วยคุณขายและดำเนินการแพ็คเกจ" data-en="We connect your hotel to hospitals, wellness partners, and cross-border patients, and help you sell and run the packages.">We connect your hotel to hospitals, wellness partners, and cross-border patients, and help you sell and run the packages.</p></details>
+      <details class="faq"><summary><span data-th="โรงพยาบาลมีส่วนร่วมอย่างไร?" data-en="How is the hospital involved?">How is the hospital involved?</span> <span class="plus"><i class="fas fa-plus"></i></span></summary><p data-th="โรงพยาบาลให้บริการดูแลและตรวจสุขภาพ ส่วนโรงแรมให้บริการที่พัก WOS ประสานงานทั้งสองฝ่าย" data-en="The hospital provides clinical care and screening; your hotel provides the stay. WOS coordinates both sides.">The hospital provides clinical care and screening; your hotel provides the stay. WOS coordinates both sides.</p></details>
+      <details class="faq"><summary><span data-th="ตลาดลาวเข้ามามีบทบาทอย่างไร?" data-en="How does the Laos market fit in?">How does the Laos market fit in?</span> <span class="plus"><i class="fas fa-plus"></i></span></summary><p data-th="อุดรธานีตั้งอยู่ตรงข้ามกับลาว ทำให้โรงแรมของคุณเข้าถึงผู้ป่วยและครอบครัวที่เดินทางมารับการรักษา" data-en="Udon Thani sits directly across the border from Laos, giving your hotel access to patients and families already travelling for care.">Udon Thani sits directly across the border from Laos, giving your hotel access to patients and families already travelling for care.</p></details>
+      <details class="faq"><summary><span data-th="หลังจาก 90 วันนำร่องแล้วเกิดอะไรขึ้น?" data-en="What happens after the 90-day pilot?">What happens after the 90-day pilot?</span> <span class="plus"><i class="fas fa-plus"></i></span></summary><p data-th="เราทบทวนผลลัพธ์ร่วมกันและวางแผนขยายแพ็คเกจที่ได้ผลดีที่สุดสำหรับทรัพย์สินของคุณ" data-en="We review results together and agree a path to scale the packages that worked best for your property.">We review results together and agree a path to scale the packages that worked best for your property.</p></details>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<section id="cta" class="page" style="background:var(--navy-deep); border-top:1px solid var(--navy-deep);">
+  <div class="page-inner text-center">
+    <div class="page-meta reveal" style="opacity:.5;">
+      <span class="tag" style="color:var(--gold-soft);" data-th="กลุ่มนำร่องผู้ก่อตั้ง" data-en="Founding Pilot Cohort">Founding Pilot Cohort</span>
+      <span class="count" style="color:#8893A6;" data-th="90 วัน · 3 ระยะ" data-en="90 Days · 3 Phases">90 Days · 3 Phases</span>
+    </div>
+    <div class="reveal">
+      <p class="serif" style="font-size:clamp(22px,3vw,30px); color:#8893A6; line-height:1.6;" data-th="จำนวนจำกัดสำหรับโรงแรมนำร่อง" data-en="A limited number of pilot hotels.">A limited number of pilot hotels.</p>
+      <p class="serif mt-3" style="font-size:clamp(26px,3.6vw,38px); color:#F7F5EF; line-height:1.5;">
+        <span data-th="สร้างโมเดล" data-en="Build the">Build the</span>
+        <span style="color:var(--gold-soft);" data-th="การดูแลสุขภาพ + การต้อนรับ" data-en="Healthcare + Hospitality">Healthcare + Hospitality</span><br>
+        <span data-th="ตั้งแต่วันแรก" data-en="from day one.">from day one.</span>
+      </p>
+    </div>
+    <div class="flex flex-wrap justify-center gap-4 mt-14 reveal">
+      <a href="YOUR_CALENDLY_LINK" target="_blank" rel="noopener" class="btn-primary" style="background:var(--gold-soft); color:var(--navy-deep);">
+        <i class="fas fa-calendar-check"></i>
+        <span data-th="จองการประชุม" data-en="Book Discovery Meeting">Book Discovery Meeting</span>
+      </a>
+      <a href="WOS_Pilot_Proposal.pdf" target="_blank" rel="noopener" download class="btn-outline-light">
+        <i class="fas fa-file-lines"></i>
+        <span data-th="ดาวน์โหลดข้อเสนอโครงการนำร่อง" data-en="Download Pilot Proposal">Download Pilot Proposal</span>
+      </a>
+    </div>
+    <p class="text-xs mt-20 reveal" style="color:#9AA5B5;">WOS — Cross-Border Healthcare &amp; Hospitality Platform · Confidential</p>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <span class="serif" style="color:var(--paper); font-size:14px; letter-spacing:.04em;">WOS <span style="color:var(--gold-soft);">Healthcare Hospitality</span></span>
+    <div class="footer-links">
+      <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+      <a href="mailto:hello@wos.co" aria-label="Email"><i class="fas fa-envelope"></i></a>
+      <a href="#" aria-label="LINE"><i class="fab fa-line"></i></a>
+      <a href="tel:+66000000000" aria-label="Phone"><i class="fas fa-phone"></i></a>
+      <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  gsap.registerPlugin(ScrollTrigger);
+
+  // === แก้ไขจุดที่ 1: ใช้ innerHTML เพื่อรักษาโครงสร้าง HTML ในภาษา ===
+  function setLanguage(lang) {
+    document.getElementById('langTh').classList.toggle('active', lang === 'th');
+    document.getElementById('langEn').classList.toggle('active', lang === 'en');
+
+    document.querySelectorAll('[data-th]').forEach(el => {
+      const thText = el.getAttribute('data-th');
+      const enText = el.getAttribute('data-en');
+      if (lang === 'th') {
+        if (thText) el.innerHTML = thText;
+      } else {
+        if (enText) el.innerHTML = enText;
+      }
+    });
+  }
+
+  document.getElementById('langTh').addEventListener('click', () => setLanguage('th'));
+  document.getElementById('langEn').addEventListener('click', () => setLanguage('en'));
+  setLanguage('th'); // เริ่มต้นภาษาไทย
+
+  // === Progress Rail ===
+  const rail = document.getElementById('progressRail');
+  window.addEventListener('scroll', () => {
+    const h = document.documentElement;
+    const pct = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+    rail.style.width = pct + '%';
+  });
+
+  // === 90-day rail fill ===
+  ScrollTrigger.create({
+    trigger: '#pilot',
+    start: 'top 75%',
+    once: true,
+    onEnter: () => document.getElementById('dayFill').style.width = '100%'
+  });
+
+  // === แก้ไขจุดที่ 3: รวมอนิเมชัน Ecosystem และ reveal ให้เป็น Timeline เดียวกัน ===
+  const ecoTimeline = gsap.timeline({
+    scrollTrigger: {
+      trigger: '#ecosystem',
+      start: 'top 70%',
+      once: true
+    }
+  });
+
+  // เปิดการ์ด .reveal ทีละอัน
+  const ecoNodes = document.querySelectorAll('#ecoContainer .reveal');
+  ecoNodes.forEach((node, i) => {
+    ecoTimeline.to(node, {
+      opacity: 1,
+      y: 0,
+      duration: 0.5,
+      ease: 'power1.out'
+    }, i * 0.12);
+  });
+
+  // หลังจากนั้นให้เส้น .fill ค่อยๆ โผล่
+  const fills = document.querySelectorAll('#ecoContainer .fill');
+  ecoTimeline.to(fills, {
+    height: '100%',
+    duration: 0.6,
+    stagger: 0.2,
+    ease: 'power1.out'
+  }, ecoNodes.length * 0.12 + 0.2);
+
+  // === Reveal อื่นๆ (ไม่รวม Ecosystem) ===
+  document.querySelectorAll('.reveal:not(#ecoContainer .reveal)').forEach(el => {
+    ScrollTrigger.create({
+      trigger: el,
+      start: 'top 88%',
+      onEnter: () => el.classList.add('visible'),
+      once: true
+    });
+  });
+</script>
+</body>
+</html>
